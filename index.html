@@ -112,15 +112,14 @@
             const variations2 = generateVariations(color2);
             const variations3 = generateVariations(color3);
 
-            // Interleave variations for proper mobile column layout
-            // Desktop (5 cols): each row = one color
-            // Mobile (3 cols): each column = one color
-            const palette = [];
-            for (let i = 0; i < 5; i++) {
-                palette.push(variations1[i]);
-                palette.push(variations2[i]);
-                palette.push(variations3[i]);
-            }
+            // Simple concatenation - CSS grid-auto-flow handles layout direction
+            // Desktop: grid-auto-flow: row (default) → each row = one color
+            // Mobile: grid-auto-flow: column → each column = one color
+            const palette = [
+                ...variations1,
+                ...variations2,
+                ...variations3
+            ];
 
             const colorGrid = document.querySelector('.color-grid');
             colorGrid.innerHTML = '';
