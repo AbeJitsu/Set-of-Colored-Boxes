@@ -61,7 +61,7 @@ body::before {
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: gradientShift 3s ease-in-out infinite;
+    animation: gradientShift 11s ease-in-out infinite;
     text-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
 }
 
