@@ -6,36 +6,162 @@
     <title>Colorful Boxes Collection</title>
     <link rel="stylesheet" href="styles.css">
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const colorBoxes = document.querySelectorAll('.color-box');
+        // Utility functions for color conversion
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
 
-            colorBoxes.forEach(box => {
-                box.addEventListener('click', function() {
-                    const colorValue = this.dataset.color;
-                    navigator.clipboard.writeText(colorValue).then(() => {
-                        // Create a temporary notification
-                        const notification = document.createElement('div');
-                        notification.textContent = `Copied ${colorValue}!`;
-                        notification.style.cssText = `
-                            position: fixed;
-                            top: 20px;
-                            right: 20px;
-                            background: var(--glow-color);
-                            color: var(--primary-bg);
-                            padding: 10px 20px;
-                            border-radius: 25px;
-                            font-weight: 600;
-                            z-index: 1000;
-                            animation: slideIn 0.3s ease-out;
-                        `;
-                        document.body.appendChild(notification);
+        function rgbToHsl(r, g, b) {
+            r /= 255;
+            g /= 255;
+            b /= 255;
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
 
-                        setTimeout(() => {
-                            notification.remove();
-                        }, 2000);
+            if (max === min) {
+                h = s = 0;
+            } else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+                    case g: h = ((b - r) / d + 2) / 6; break;
+                    case b: h = ((r - g) / d + 4) / 6; break;
+                }
+            }
+
+            return {
+                h: Math.round(h * 360),
+                s: Math.round(s * 100),
+                l: Math.round(l * 100)
+            };
+        }
+
+        function hexToHsl(hex) {
+            const rgb = hexToRgb(hex);
+            return rgb ? rgbToHsl(rgb.r, rgb.g, rgb.b) : null;
+        }
+
+        function generateVariations(hex) {
+            const hsl = hexToHsl(hex);
+            if (!hsl) return [];
+
+            const variations = [];
+            const { h, s, l } = hsl;
+
+            // Generate 5 variations with different lightness and saturation
+            const adjustments = [
+                { name: 'Lighter', lDelta: 25, sDelta: -10, alpha: 0.95 },
+                { name: 'Light', lDelta: 15, sDelta: -5, alpha: 1 },
+                { name: 'Base', lDelta: 0, sDelta: 0, alpha: 1 },
+                { name: 'Dark', lDelta: -15, sDelta: 5, alpha: 1 },
+                { name: 'Darker', lDelta: -25, sDelta: 10, alpha: 0.95 }
+            ];
+
+            adjustments.forEach(adj => {
+                let newL = Math.max(0, Math.min(100, l + adj.lDelta));
+                let newS = Math.max(0, Math.min(100, s + adj.sDelta));
+                variations.push({
+                    hsla: `hsla(${h}, ${newS}%, ${newL}%, ${adj.alpha})`,
+                    name: adj.name
+                });
+            });
+
+            return variations;
+        }
+
+        function generatePalette() {
+            const color1 = document.getElementById('color1-text').value;
+            const color2 = document.getElementById('color2-text').value;
+            const color3 = document.getElementById('color3-text').value;
+
+            const palette = [
+                ...generateVariations(color1),
+                ...generateVariations(color2),
+                ...generateVariations(color3)
+            ];
+
+            const colorGrid = document.querySelector('.color-grid');
+            colorGrid.innerHTML = '';
+
+            palette.forEach((color, index) => {
+                const colorBox = document.createElement('div');
+                colorBox.className = `color-box color${index + 1}`;
+                colorBox.dataset.color = color.hsla;
+                colorBox.dataset.name = color.name;
+                colorBox.style.background = color.hsla;
+
+                const colorInfo = document.createElement('div');
+                colorInfo.className = 'color-info';
+                colorInfo.innerHTML = `
+                    <span class="color-value">${color.hsla}</span>
+                    <span class="color-name">${color.name}</span>
+                `;
+
+                colorBox.appendChild(colorInfo);
+                colorGrid.appendChild(colorBox);
+
+                // Add click handler for copying
+                colorBox.addEventListener('click', function() {
+                    navigator.clipboard.writeText(color.hsla).then(() => {
+                        showNotification(`Copied ${color.hsla}!`);
                     });
                 });
             });
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--glow-color);
+                color: var(--primary-bg);
+                padding: 10px 20px;
+                border-radius: 25px;
+                font-weight: 600;
+                z-index: 1000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 2000);
+        }
+
+        function syncColorInputs(pickerId, textId) {
+            const picker = document.getElementById(pickerId);
+            const text = document.getElementById(textId);
+
+            picker.addEventListener('input', () => {
+                text.value = picker.value.toUpperCase();
+            });
+
+            text.addEventListener('input', () => {
+                const hex = text.value;
+                if (/^#[0-9A-F]{6}$/i.test(hex)) {
+                    picker.value = hex;
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sync color pickers with text inputs
+            syncColorInputs('color1-picker', 'color1-text');
+            syncColorInputs('color2-picker', 'color2-text');
+            syncColorInputs('color3-picker', 'color3-text');
+
+            // Generate palette on button click
+            document.getElementById('generate-btn').addEventListener('click', generatePalette);
+
+            // Generate initial palette
+            generatePalette();
         });
     </script>
 </head>
@@ -44,6 +170,34 @@
         <h1 class="title">Chromatic Collection</h1>
         <p class="subtitle">An Interactive Color Palette Experience</p>
     </header>
+
+    <div class="palette-controls">
+        <h2 class="controls-title">Color Palette Generator</h2>
+        <div class="input-group">
+            <div class="color-input-wrapper">
+                <label>Color 1</label>
+                <div class="input-container">
+                    <input type="color" id="color1-picker" value="#142448">
+                    <input type="text" id="color1-text" value="#142448" placeholder="#142448">
+                </div>
+            </div>
+            <div class="color-input-wrapper">
+                <label>Color 2</label>
+                <div class="input-container">
+                    <input type="color" id="color2-picker" value="#FFFFFF">
+                    <input type="text" id="color2-text" value="#FFFFFF" placeholder="#FFFFFF">
+                </div>
+            </div>
+            <div class="color-input-wrapper">
+                <label>Color 3</label>
+                <div class="input-container">
+                    <input type="color" id="color3-picker" value="#E3002B">
+                    <input type="text" id="color3-text" value="#E3002B" placeholder="#E3002B">
+                </div>
+            </div>
+        </div>
+        <button id="generate-btn" class="generate-button">Generate Palette</button>
+    </div>
 
     <div class="color-grid">
         <div class="color-box color1" data-color="#FF6B6B" data-name="Sunset Coral">
