@@ -1,8 +1,76 @@
+:root {
+    --primary-bg: #0f0f23;
+    --secondary-bg: #1a1a2e;
+    --accent-color: #16213e;
+    --text-color: #fff;
+    --glow-color: #00d4ff;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
 body {
-    background-color: #f4f4f4;
+    background: linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 50%, var(--accent-color) 100%);
+    background-attachment: fixed;
     margin: 0;
-    padding: 40px;
-    font-family: 'Arial', sans-serif;
+    padding: 40px 20px;
+    font-family: 'Inter', 'Arial', sans-serif;
+    min-height: 100vh;
+    color: var(--text-color);
+    overflow-x: hidden;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        radial-gradient(circle at 25% 25%, rgba(0, 212, 255, 0.1) 0%, transparent 25%),
+        radial-gradient(circle at 75% 75%, rgba(255, 107, 107, 0.1) 0%, transparent 25%),
+        radial-gradient(circle at 50% 50%, rgba(155, 89, 182, 0.1) 0%, transparent 25%);
+    animation: backgroundShift 20s ease-in-out infinite;
+    z-index: -1;
+}
+
+@keyframes backgroundShift {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 0.3;
+    }
+    50% {
+        transform: scale(1.1) rotate(180deg);
+        opacity: 0.6;
+    }
+}
+
+.main-header {
+    text-align: center;
+    margin-bottom: 60px;
+    position: relative;
+}
+
+.title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    background: linear-gradient(45deg, var(--glow-color), #ff6b6b, #9b59b6, var(--glow-color));
+    background-size: 300% 300%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientShift 3s ease-in-out infinite;
+    text-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    font-weight: 300;
+    margin: 0;
+    opacity: 0.8;
+    letter-spacing: 0.5px;
 }
 
 .color-grid {
@@ -17,33 +85,190 @@ body {
 .color-box {
     width: 180px;
     height: 180px;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 3px solid rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+}
+
+.color-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: inherit;
+    z-index: -1;
+    filter: blur(20px);
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
 }
 
 .color-box:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+    transform: translateY(-15px) scale(1.05);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 30px var(--glow-color);
+    border-color: var(--glow-color);
+}
+
+.color-box:hover::before {
+    opacity: 1;
+    filter: blur(30px);
 }
 
 .color1 {
-    background-color: #FF6B6B;
+    background: linear-gradient(45deg, #FF6B6B, #FF8E53, #FF6B9D);
+    background-size: 300% 300%;
+    animation: gradientShift 4s ease-in-out infinite;
+    animation-delay: 0s;
 }
 
 .color2 {
-    background-color: rgb(130, 205, 71);
+    background: linear-gradient(45deg, rgb(130, 205, 71), rgb(76, 175, 80), rgb(139, 195, 74));
+    background-size: 300% 300%;
+    animation: gradientShift 4s ease-in-out infinite;
+    animation-delay: 0.8s;
 }
 
 .color3 {
-    background-color: coral;
+    background: linear-gradient(45deg, coral, #FF7F50, #FFB347);
+    background-size: 300% 300%;
+    animation: gradientShift 4s ease-in-out infinite;
+    animation-delay: 1.6s;
 }
 
 .color4 {
-    background-color: hsl(210, 70%, 60%);
+    background: linear-gradient(45deg, hsl(210, 70%, 60%), hsl(220, 70%, 60%), hsl(200, 70%, 60%));
+    background-size: 300% 300%;
+    animation: gradientShift 4s ease-in-out infinite;
+    animation-delay: 2.4s;
 }
 
 .color5 {
-    background-color: #9B59B6;
+    background: linear-gradient(45deg, #9B59B6, #8E44AD, #BB6BD9);
+    background-size: 300% 300%;
+    animation: gradientShift 4s ease-in-out infinite;
+    animation-delay: 3.2s;
+}
+
+@keyframes gradientShift {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.color-box {
+    animation: float 3s ease-in-out infinite;
+}
+
+.color1 {
+    animation: gradientShift 4s ease-in-out infinite, float 3s ease-in-out infinite;
+    animation-delay: 0s, 0s;
+}
+.color2 {
+    animation: gradientShift 4s ease-in-out infinite, float 3s ease-in-out infinite;
+    animation-delay: 0.8s, 0.6s;
+}
+.color3 {
+    animation: gradientShift 4s ease-in-out infinite, float 3s ease-in-out infinite;
+    animation-delay: 1.6s, 1.2s;
+}
+.color4 {
+    animation: gradientShift 4s ease-in-out infinite, float 3s ease-in-out infinite;
+    animation-delay: 2.4s, 1.8s;
+}
+.color5 {
+    animation: gradientShift 4s ease-in-out infinite, float 3s ease-in-out infinite;
+    animation-delay: 3.2s, 2.4s;
+}
+
+.color-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    padding: 15px;
+    border-radius: 0 0 18px 18px;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-align: center;
+}
+
+.color-box:hover .color-info {
+    transform: translateY(0);
+}
+
+.color-value {
+    display: block;
+    font-family: 'Monaco', 'Consolas', monospace;
+    font-size: 0.9rem;
+    color: var(--glow-color);
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.color-name {
+    display: block;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 300;
+}
+
+@media (max-width: 768px) {
+    .color-grid {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 20px;
+        padding: 15px;
+    }
+
+    .color-box {
+        width: 140px;
+        height: 140px;
+    }
+
+    .main-header {
+        margin-bottom: 40px;
+    }
+
+    .title {
+        font-size: 2.5rem;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.color-box {
+    cursor: pointer;
 }
