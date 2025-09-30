@@ -1,0 +1,49 @@
+body {
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 40px;
+    font-family: 'Arial', sans-serif;
+}
+
+.color-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.color-box {
+    width: 180px;
+    height: 180px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 3px solid rgba(255, 255, 255, 0.8);
+}
+
+.color-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+}
+
+.color1 {
+    background-color: #FF6B6B;
+}
+
+.color2 {
+    background-color: rgb(130, 205, 71);
+}
+
+.color3 {
+    background-color: coral;
+}
+
+.color4 {
+    background-color: hsl(210, 70%, 60%);
+}
+
+.color5 {
+    background-color: #9B59B6;
+}
